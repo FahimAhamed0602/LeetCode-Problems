@@ -1,0 +1,23 @@
+class Solution(object):
+    def longestCommonPrefix(self, strs):
+        """
+        :type strs: List[str]
+        :rtype: str
+        """
+        if not strs:
+            return ""
+        
+        # Start by assuming the first string is the prefix
+        # We only need to iterate up to the length of the first string
+        for i in range(len(strs[0])):
+            char = strs[0][i]
+            
+            # Check this character against every other string in the list
+            for j in range(1, len(strs)):
+                # If we've reached the end of one of the strings OR 
+                # the characters don't match, return the prefix found so far
+                if i == len(strs[j]) or strs[j][i] != char:
+                    return strs[0][:i]
+        
+        # If we finish the loop, the entire first string is the prefix
+        return strs[0]
