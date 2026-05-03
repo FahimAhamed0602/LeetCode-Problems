@@ -1,0 +1,23 @@
+class Solution(object):
+    def removeElement(self, nums, val):
+        """
+        :type nums: List[int]
+        :type val: int
+        :rtype: int
+        """   
+        i = 0
+        n = len(nums)
+        
+        while i < n:
+            if nums[i] == val:
+                # Replace the target with the last element
+                nums[i] = nums[n - 1]
+                # Reduce the array size by 1 (we don't increment 'i' yet 
+                # because the swapped element might also be equal to 'val')
+                n -= 1
+            else:
+                i += 1
+                
+        return n
+        
+    
