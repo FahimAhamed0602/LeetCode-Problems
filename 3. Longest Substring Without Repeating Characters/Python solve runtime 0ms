@@ -1,0 +1,25 @@
+class Solution(object):
+    def lengthOfLongestSubstring(self, s):
+        """
+        :type s: str
+        :rtype: int
+        """
+        char_map = {}  # Stores the last seen index of each character
+        l = 0
+        maxlen = 0
+        
+        for r, char in enumerate(s):
+            # If char is in the map AND its index is within our current window
+            if char in char_map and char_map[char] >= l:
+                # Jump the left pointer past the previous occurrence
+                l = char_map[char] + 1
+            
+            # Update the character's last seen position
+            char_map[char] = r
+            
+            # Calculate length and update max
+            current_len = r - l + 1
+            if current_len > maxlen:
+                maxlen = current_len
+                
+        return maxlen
