@@ -1,0 +1,27 @@
+class Solution(object):
+    def longestPalindrome(self, s):
+        def expandAroundCenter(left, right):
+            # Expand outwards as long as the characters match
+            while left >= 0 and right < len(s) and s[left] == s[right]:
+                left -= 1
+                right += 1
+            
+            # The loop breaks when the characters DON'T match (or go out of bounds).
+            # This means the valid palindrome is one step inward: left + 1 to right.
+            return s[left + 1:right]
+
+        result = ""
+        for i in range(len(s)):
+            # Check for odd-length palindromes (single character center)
+            odd = expandAroundCenter(i, i)
+            
+            # Check for even-length palindromes (two character center)
+            even = expandAroundCenter(i, i + 1)
+            
+            # Update the longest palindrome found so far
+            if len(odd) > len(result):
+                result = odd
+            if len(even) > len(result):
+                result = even
+                
+        return result
