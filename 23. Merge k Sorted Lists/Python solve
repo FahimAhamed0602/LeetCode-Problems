@@ -1,0 +1,35 @@
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+
+import heapq
+
+class Solution:
+    def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+        heap = []
+        
+        # 1. Push the head of each linked list into the min-heap
+        for i, head in enumerate(lists):
+            if head:
+                # Store (node value, index tracker, node object)
+                heapq.heappush(heap, (head.val, i, head))
+        
+        # 2. Setup dummy node to build the new merged list
+        dummy = ListNode(0)
+        curr = dummy
+        
+        # 3. Process the heap until empty
+        while heap:
+            val, i, node = heapq.heappop(heap)
+            
+            # Append the smallest node to our result list
+            curr.next = node
+            curr = curr.next
+            
+            # If the popped node has a next element, push it into the heap
+            if node.next:
+                heapq.heappush(heap, (node.next.val, i, node.next))
+                
+        return dummy.next
