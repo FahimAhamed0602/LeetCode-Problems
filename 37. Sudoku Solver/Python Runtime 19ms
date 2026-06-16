@@ -1,0 +1,82 @@
+class Solution:
+    def solveSudoku(self, board: List[List[str]]) -> None:
+        rows = [0] * 9
+        cols = [0] * 9
+        boxes = [0] * 9
+        empty_cells = []
+        
+        # Pre-calculated string lookup to completely avoid str() overhead in recursion
+        STR_LOOKUP = ["", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        
+        for r in range(9):
+            for c in range(9):
+                val = board[r][c]
+                if val != '.':
+                    mask = 1 << (int(val) - 1)
+                    rows[r] |= mask
+                    cols[c] |= mask
+                    boxes[(r // 3) * 3 + (c // 3)] |= mask
+                else:
+                    empty_cells.append((r, c))
+                    
+        # Cache length locally 
+        num_empty = len(empty_cells)
+
+        def backtrack(idx: int) -> bool:
+            # Base case: if pointer reaches the end, we are done
+            if idx == num_empty:
+                return True
+                
+            # --- Faster Static MRV ---
+            # Instead of looking through a set, scan the remaining slice of the list
+            best_i = idx
+            min_choices = 11
+            best_mask = 0
+            best_b = 0
+            
+            for i in range(idx, num_empty):
+                r, c = empty_cells[i]
+                b = (r // 3) * 3 + (c // 3)
+                avail_mask = ~(rows[r] | cols[c] | boxes[b]) & 0x1FF
+                choices_count = bin(avail_mask).count('1')
+                
+                if choices_count == 0:
+                    return False
+                if choices_count < min_choices:
+                    min_choices = choices_count
+                    best_i = i
+                    best_mask = avail_mask
+                    best_b = b
+                    if min_choices == 1:
+                        break
+            
+            # Swapping elements in place is vastly faster than set.remove() / set.add()
+            empty_cells[idx], empty_cells[best_i] = empty_cells[best_i], empty_cells[idx]
+            r, c = empty_cells[idx]
+            b = best_b
+            
+            # Explore choices
+            while best_mask > 0:
+                lsb = best_mask & -best_mask
+                val_idx = lsb.bit_length()
+                
+                board[r][c] = STR_LOOKUP[val_idx]
+                rows[r] |= lsb
+                cols[c] |= lsb
+                boxes[b] |= lsb
+                
+                if backtrack(idx + 1):
+                    return True
+                    
+                rows[r] &= ~lsb
+                cols[c] &= ~lsb
+                boxes[b] &= ~lsb
+                
+                best_mask &= best_mask - 1
+                
+            # Restore state for backtracking
+            board[r][c] = '.'
+            empty_cells[idx], empty_cells[best_i] = empty_cells[best_i], empty_cells[idx]
+            return False
+
+        backtrack(0)
