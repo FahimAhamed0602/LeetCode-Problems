@@ -1,0 +1,13 @@
+# Fast I/O block to optimize LeetCode's judge speed
+import sys
+input = sys.stdin.read
+
+class Solution:
+    def firstMissingPositive(self, nums: List[int]) -> int:
+        # Pushes the deduplication and hashing entirely into optimized C code
+        num_set = set(nums)
+        
+        # The answer must be between 1 and len(nums) + 1
+        for i in range(1, len(nums) + 2):
+            if i not in num_set:
+                return i
