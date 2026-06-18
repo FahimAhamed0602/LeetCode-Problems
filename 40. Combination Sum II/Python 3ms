@@ -1,0 +1,37 @@
+class Solution:
+    def combinationSum2(self, candidates: List[int], target: int) -> List[List[int]]:
+        res = []
+        # 1. Sort candidates to easily skip duplicates
+        candidates.sort()
+        
+        def backtrack(start: int, target: int, current_comb: List[int]):
+            # Base Case 1: Target reached
+            if target == 0:
+                res.append(list(current_comb))
+                return
+            
+            # Base Case 2: Exceeded target (early pruning since list is sorted)
+            if target < 0:
+                return
+            
+            for i in range(start, len(candidates)):
+                # If the current element is greater than remaining target, 
+                # all subsequent elements will also be too large. Break early.
+                if candidates[i] > target:
+                    break
+                
+                # Skip duplicate elements at the same recursion depth
+                if i > start and candidates[i] == candidates[i - 1]:
+                    continue
+                
+                # Take the current element
+                current_comb.append(candidates[i])
+                
+                # Move to the next element (i + 1 ensures elements aren't reused)
+                backtrack(i + 1, target - candidates[i], current_comb)
+                
+                # Backtrack / Clean up
+                current_comb.pop()
+                
+        backtrack(0, target, [])
+        return res
